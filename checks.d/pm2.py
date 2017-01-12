@@ -1,6 +1,7 @@
 #  PYTHONPATH=.:/usr/share/datadog/agent/ python checks.d/pm2.py
 import subprocess
 import json
+import time
 
 from checks import AgentCheck
 
@@ -17,8 +18,9 @@ class Pm2(AgentCheck):
 
         for instance in load_json(instance['command'].split(' ')):
             node_app_instance = instance['pm2_env']['NODE_APP_INSTANCE']
+            app_name = instance['pm2_env']['name']
 
-            tags = ["node_id:%s" % node_app_instance]
+            tags = ["node_id:%s,app_name:%s" %(node_app_instance, app_name)]
 
             # cpu, memory, errors, processes, restart
             self.gauge('pm2.processes.cpu'.format(node_app_instance), instance['monit']['cpu'], tags=tags)
